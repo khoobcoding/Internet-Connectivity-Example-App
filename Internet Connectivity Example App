@@ -1,0 +1,94 @@
+// First install this package in your pubspec.yaml
+dependencies:
+  connectivity_plus: ^3.0.2
+
+
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(debugShowCheckedModeBanner: false, home: Home());
+  }
+}
+
+class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  StreamSubscription? connectivitysubscription;
+  ConnectivityResult? connectivityresult = ConnectivityResult.none;
+
+  @override
+  void initState() {
+    super.initState();
+    connectivitysubscription =
+        Connectivity().onConnectivityChanged.listen((ConnectivityResult res) {
+      if (res == ConnectivityResult.mobile) {
+        print('Mobile');
+      } else if (res == ConnectivityResult.wifi) {
+        print('Wifi');
+      } else if (res == ConnectivityResult.bluetooth) {
+        print('Bluetooth');
+      } else if (res == ConnectivityResult.ethernet) {
+        print('Ethernet');
+      } else if (res == ConnectivityResult.vpn) {
+        print('Vpn');
+      } else {
+        print('None');
+      }
+      connectivityresult = res;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    connectivitysubscription!.cancel();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.indigo,
+        title: const Text('Internet Connectivity Example App'),
+      ),
+      body: Center(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Connection State'),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(connectivityresult.toString(),
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: connectivityresult == ConnectivityResult.none
+                      ? Colors.red
+                      : Colors.green))
+        ],
+      )),
+    );
+  }
+}
